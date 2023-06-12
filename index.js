@@ -1,6 +1,13 @@
-require("dotenv/config");
+require("dotenv").config();
 const { Configuration, OpenAIApi } = require("openai");
 const { Client, IntentsBitField } = require("discord.js");
+
+const CHANNEL_ID = process.env.DISCORD_CHANNEL_ID;
+const API_KEY = process.env.OPENAI_API_KEY;
+const TOKEN = process.env.TOKEN;
+const PORT = process.env.PORT;
+const PUBLIC_KEY = process.env.APPLICATION_PUBLIC_KEY;
+const CLIENT_ID = process.env.CLIENT_ID;
 
 const client = new Client({
   intents: [
@@ -11,17 +18,22 @@ const client = new Client({
 });
 
 const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
 client.on("ready", () => {
-  console.log("The bot is now running!");
+  console.log(`Logged in as ${client.user.tag}`);
+
+  client.user.setPresence({
+    activity: { name: "Hi, I am playing now!", type: "PLAYING" },
+    status: "online",
+  });
 });
 
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
-  if (message.channelId !== process.env.DISCORD_CHANNEL_ID) return;
+  if (message.channelId !== CHANNEL_ID) return;
 
   try {
     await message.channel.sendTyping();
@@ -52,4 +64,4 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-client.login(process.env.TOKEN);
+client.login(TOKEN);
